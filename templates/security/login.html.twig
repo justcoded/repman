@@ -1,6 +1,6 @@
 {% extends 'base-card.html.twig' %}
 
-{% block title %}Log in! - Repman{% endblock %}
+{% block title %}Log in!{% endblock %}
 
 {% block card %}
 <form class="card" method="post">
@@ -19,7 +19,7 @@
             </div>
         {% endif %}
 
-        {% if oauth_enabled() %}
+        {% if oauth_enabled() and 0 %}
             <div class="text-center">
                 {% if oauth_enabled('github') %}
                     <a href="{{ url('auth_github_start') }}" class="btn btn-github btn-sm">
