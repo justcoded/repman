@@ -38,7 +38,7 @@ final class RepoController extends AbstractController
     }
 
     /**
-     * @Route("/packages.json", host="{organization}{sep1}repo{sep2}{domain}", name="repo_packages", methods={"GET"}, defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"}, requirements={"domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"})
+     * @Route("/{sep1}{organization}/packages.json", host="{domain}", name="repo_packages", methods={"GET"}, defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"}, requirements={"domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"})
      * @Cache(public=false)
      */
     public function packages(Request $request, Organization $organization): JsonResponse

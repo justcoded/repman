@@ -37,8 +37,8 @@ final class ProxyController extends AbstractController
 
     /**
      * @Route(
-     *     "/packages.json",
-     *     host="repo{domain_separator}{domain}",
+     *     "/p/packages.json",
+     *     host="{domain}",
      *     name="packages",
      *     methods={"GET"},
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
