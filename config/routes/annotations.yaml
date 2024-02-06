@@ -6,7 +6,7 @@ app_logout:
     path: /logout
 
 proxy_repo_url:
-    path: '/p'
+    path: '/{domain_separator}/'
     schemes: ['%url_scheme%']
     host: '{domain}'
     defaults:
@@ -17,7 +17,7 @@ proxy_repo_url:
         domain_separator: '%domain_separator%'
 
 organization_repo_url:
-    path: '/{sep1}{organization}'
+    path: '/{sep1}/{organization}/'
     schemes: ['%url_scheme%']
     host: '{domain}'
     defaults:

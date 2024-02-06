@@ -37,7 +37,7 @@ final class ProxyController extends AbstractController
 
     /**
      * @Route(
-     *     "/p/packages.json",
+     *     "/{domain_separator}/packages.json",
      *     host="{domain}",
      *     name="packages",
      *     methods={"GET"},
@@ -48,18 +48,19 @@ final class ProxyController extends AbstractController
     public function packages(Request $request): JsonResponse
     {
         $metadata = $this->register->getByHost('packagist.org')->latestProvider();
+        $proxyUrl = $this->generateUrl('proxy_repo_url', [], RouterInterface::ABSOLUTE_URL);
         $response = (new JsonResponse([
             'notify-batch' => $this->generateUrl('package_downloads', [], RouterInterface::ABSOLUTE_URL),
-            'providers-url' => '/p/%package%$%hash%.json',
-            'metadata-url' => '/p2/%package%.json',
-            'search' => 'https://packagist.org/search.json?q=%query%&type=%type%',
+            'providers-url' => $proxyUrl . 'p/%package%$%hash%.json',
+            'metadata-url' => $proxyUrl . 'p2/%package%.json',
+            //'search' => 'https://packagist.org/search.json?q=%query%&type=%type%',
             'mirrors' => [
                 [
-                    'dist-url' => $this->generateUrl('index', [], RouterInterface::ABSOLUTE_URL).'dists/%package%/%version%/%reference%.%type%',
+                    'dist-url' => $proxyUrl . 'dists/%package%/%version%/%reference%.%type%',
                     'preferred' => true,
                 ],
             ],
-            'providers-lazy-url' => '/p/%package%',
+            'providers-lazy-url' => $proxyUrl . 'p/%package%',
             'provider-includes' => $metadata->isPresent() ? ['p/provider-latest$%hash%.json' => ['sha256' => $metadata->get()->hash()]] : [],
         ]))
             ->setPublic()
@@ -78,9 +79,9 @@ final class ProxyController extends AbstractController
     }
 
     /**
-     * @Route("/p/{package}${hash}.json",
+     * @Route("/{domain_separator}/p/{package}${hash}.json",
      *     name="package_legacy_metadata",
-     *     host="repo{domain_separator}{domain}",
+     *     host="{domain}",
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
      *     requirements={"package"="%package_name_pattern%","domain"="%domain%","domain_separator"="%domain_separator%"},
      *     methods={"GET"})
@@ -109,9 +110,9 @@ final class ProxyController extends AbstractController
     }
 
     /**
-     * @Route("/p/{package}",
+     * @Route("/{domain_separator}/p/{package}",
      *     name="package_legacy_metadata_lazy",
-     *     host="repo{domain_separator}{domain}",
+     *     host="{domain}",
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
      *     requirements={"package"="%package_name_pattern%","domain"="%domain%","domain_separator"="%domain_separator%"},
      *     methods={"GET"})
@@ -141,8 +142,8 @@ final class ProxyController extends AbstractController
 
     /**
      * @Route(
-     *     "/p/provider-{version}${hash}.json",
-     *     host="repo{domain_separator}{domain}",
+     *     "/{domain_separator}/p/provider-{version}${hash}.json",
+     *     host="{domain}",
      *     name="providers",
      *     methods={"GET"},
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
@@ -173,9 +174,9 @@ final class ProxyController extends AbstractController
     }
 
     /**
-     * @Route("/p2/{package}.json",
+     * @Route("/{domain_separator}/p2/{package}.json",
      *     name="package_metadata",
-     *     host="repo{domain_separator}{domain}",
+     *     host="{domain}",
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
      *     requirements={"package"="%package_name_pattern%","domain"="%domain%","domain_separator"="%domain_separator%"},
      *     methods={"GET"})
@@ -204,9 +205,9 @@ final class ProxyController extends AbstractController
     }
 
     /**
-     * @Route("/dists/{package}/{version}/{ref}.{type}",
+     * @Route("/{domain_separator}/dists/{package}/{version}/{ref}.{type}",
      *     name="package_dist",
-     *     host="repo{domain_separator}{domain}",
+     *     host="{domain}",
      *     defaults={"domain"="%domain%","domain_separator"="%domain_separator%"},
      *     requirements={"package"="%package_name_pattern%","ref"="[a-f0-9]*?","type"="zip|tar","domain"="%domain%","domain_separator"="%domain_separator%"},
      *     methods={"GET"})
@@ -235,9 +236,9 @@ final class ProxyController extends AbstractController
     }
 
     /**
-     * @Route("/downloads",
+     * @Route("/{domain_separator}/downloads",
      *     name="package_downloads",
-     *     host="repo{domain_separator}{domain}",
+     *     host="{domain}",
      *     defaults={"domain":"%domain%","domain_separator"="%domain_separator%"},
      *     requirements={"domain"="%domain%","domain_separator"="%domain_separator%"},
      *     methods={"POST"})

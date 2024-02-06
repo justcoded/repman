@@ -38,7 +38,12 @@ final class RepoController extends AbstractController
     }
 
     /**
-     * @Route("/{sep1}{organization}/packages.json", host="{domain}", name="repo_packages", methods={"GET"}, defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"}, requirements={"domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"})
+     * @Route("/{sep1}/{organization}/packages.json",
+     *     host="{domain}",
+     *     name="repo_packages",
+     *     methods={"GET"},
+     *     defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
+     *     requirements={"domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"})
      * @Cache(public=false)
      */
     public function packages(Request $request, Organization $organization): JsonResponse
@@ -49,11 +54,15 @@ final class RepoController extends AbstractController
         $response = (new JsonResponse([
             'packages' => $packages,
             'available-packages' => array_map(static fn (PackageName $packageName) => $packageName->name(), $packageNames),
-            'metadata-url' => '/p2/%package%.json',
+            'metadata-url' => $this->generateUrl(
+                    'organization_repo_url',
+                    ['organization' => $organization->alias()],
+                    RouterInterface::ABSOLUTE_URL
+                ).'p2/%package%.json',
             'notify-batch' => $this->generateUrl('repo_package_downloads', [
                 'organization' => $organization->alias(),
             ], UrlGeneratorInterface::ABSOLUTE_URL),
-            'search' => 'https://packagist.org/search.json?q=%query%&type=%type%',
+            //'search' => 'https://packagist.org/search.json?q=%query%&type=%type%',
             'mirrors' => [
                 [
                     'dist-url' => $this->generateUrl(
@@ -61,7 +70,7 @@ final class RepoController extends AbstractController
                         ['organization' => $organization->alias()],
                         RouterInterface::ABSOLUTE_URL
                     ).'dists/%package%/%version%/%reference%.%type%',
-                    'preferred' => true,
+                    'preferred' => false,
                 ],
             ],
         ]))
@@ -74,9 +83,9 @@ final class RepoController extends AbstractController
     }
 
     /**
-     * @Route("/dists/{package}/{version}/{ref}.{type}",
+     * @Route("/{sep1}/{organization}/dists/{package}/{version}/{ref}.{type}",
      *     name="repo_package_dist",
-     *     host="{organization}{sep1}repo{sep2}{domain}",
+     *     host="{domain}",
      *     defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
      *     requirements={"package"="%package_name_pattern%","ref"="[a-f0-9]*?","type"="zip|tar","domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
      *     methods={"GET"})
@@ -103,9 +112,9 @@ final class RepoController extends AbstractController
     }
 
     /**
-     * @Route("/downloads",
+     * @Route("/{sep1}/{organization}/downloads",
      *     name="repo_package_downloads",
-     *     host="{organization}{sep1}repo{sep2}{domain}",
+     *     host="{domain}",
      *     defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
      *     requirements={"domain"="%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
      *     methods={"POST"})
@@ -141,8 +150,8 @@ final class RepoController extends AbstractController
     }
 
     /**
-     * @Route("/p2/{package}.json",
-     *      host="{organization}{sep1}repo{sep2}{domain}",
+     * @Route("/{sep1}/{organization}/p2/{package}.json",
+     *      host="{domain}",
      *      name="repo_package_provider_v2",
      *      methods={"GET"},
      *      defaults={"domain":"%domain%","sep1"="%organization_separator%","sep2"="%domain_separator%"},
