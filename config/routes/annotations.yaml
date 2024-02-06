@@ -23,9 +23,11 @@ organization_repo_url:
     defaults:
         domain: '%domain%'
         sep1: '%organization_separator%'
+        sep2: '%domain_separator%'
     requirements:
         domain: '%domain%'
         sep1: '%organization_separator%'
+        sep2: '%domain_separator%'
 
 login_github_check:
     path: /auth/github/check
