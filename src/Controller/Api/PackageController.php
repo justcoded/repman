@@ -72,6 +72,11 @@ final class PackageController extends ApiController
      *     in="query"
      * )
      *
+     * @Oa\Parameter(
+     *      name="per_page",
+     *      in="query"
+     *  )
+     *
      * @OA\Response(
      *     response=200,
      *     description="Returns list of organization's packages",
@@ -93,7 +98,7 @@ final class PackageController extends ApiController
             new Packages(...$this->paginate(
                 fn ($perPage, $offset) => $this->packageQuery->findAll($organization->id(), $perPage, $offset),
                 $this->packageQuery->count($organization->id()),
-                20,
+                (int) $request->get('per_page', 20),
                 (int) $request->get('page', 1),
                 $this->generateUrl('api_packages', [
                     'organization' => $organization->alias(),
